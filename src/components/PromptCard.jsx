@@ -30,7 +30,7 @@ export default function PromptCard({ label, prompt, expect, tag, multi }) {
       {/* Header — always visible, click to expand */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2.5 px-4 py-3.5 text-left"
+        className="w-full flex items-center gap-2.5 px-4 py-3.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-150"
       >
         <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 shrink-0">
           <MessageSquare size={14} strokeWidth={2} />
@@ -43,9 +43,12 @@ export default function PromptCard({ label, prompt, expect, tag, multi }) {
             </span>
           )}
         </div>
+        <span className={`text-xs font-medium transition-colors duration-150 ${open ? 'text-indigo-500 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`}>
+          {open ? 'Close' : 'Expand'}
+        </span>
         <ChevronDown
           size={15}
-          className={`shrink-0 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`shrink-0 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180 text-indigo-500' : ''}`}
         />
       </button>
 

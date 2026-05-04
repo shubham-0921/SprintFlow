@@ -76,7 +76,7 @@ export default function Step5Prompts() {
   return (
     <div className="space-y-6">
       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-        Copy-paste any of these prompts directly into Claude Code. Hover over a prompt to reveal the copy button.
+        Click any prompt to expand it, edit it to fit your context, and copy it directly into Claude Code.
       </p>
 
       <div className="grid gap-4">

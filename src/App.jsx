@@ -64,7 +64,6 @@ export default function App() {
     }
   })
   const stepRefs = useRef([])
-  const observerRef = useRef(null)
 
   const steps = STEPS_CONFIG
   const stepCtx = { orgName, setOrgName }
@@ -74,23 +73,18 @@ export default function App() {
   }, [dark])
 
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = steps.findIndex((s) => s.id === entry.target.id)
-            if (idx !== -1) setActiveStep(idx)
-          }
-        })
-      },
-      { threshold: 0.3, rootMargin: '-80px 0px -60% 0px' }
-    )
+    const handleScroll = () => {
+      const scrollY = window.scrollY + 120 // offset for sticky header
+      let current = 0
+      stepRefs.current.forEach((ref, i) => {
+        if (ref && ref.offsetTop <= scrollY) current = i
+      })
+      setActiveStep(current)
+    }
 
-    stepRefs.current.forEach((ref) => {
-      if (ref) observerRef.current.observe(ref)
-    })
-
-    return () => observerRef.current?.disconnect()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const toggleDone = (idx) => {
@@ -278,8 +272,8 @@ export default function App() {
             })}
 
             <div className="text-center py-8 text-xs text-slate-400 dark:text-slate-500 space-y-1">
-              <p>SprintFlow — built for the <strong className="text-slate-600 dark:text-slate-400">{orgName} / Qwipo B2B</strong> team.</p>
               <p>MCP server: <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">@azure-devops/mcp</code></p>
+              <p className="text-slate-500 dark:text-slate-500">Built by <strong className="text-slate-600 dark:text-slate-400">Shubham</strong> for the {orgName} team.</p>
             </div>
           </main>
         </div>
