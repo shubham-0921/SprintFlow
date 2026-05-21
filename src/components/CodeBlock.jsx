@@ -3,6 +3,7 @@ import CopyButton from './CopyButton'
 import { Pencil, Eye } from 'lucide-react'
 
 function highlight(code, language) {
+  if (!language || language === 'text' || language === 'markdown') return code
   if (language === 'json') {
     return code
       .replace(/("(?:[^"\\]|\\.)*")\s*:/g, '<span class="text-sky-400">$1</span>:')

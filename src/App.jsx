@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { Sun, Moon, CheckCircle2, Circle } from 'lucide-react'
+import { Sun, Moon, CheckCircle2, Circle, Link2 } from 'lucide-react'
 import Step1PAT from './steps/Step1PAT'
 import Step2Encode from './steps/Step2Encode'
 import Step3Config from './steps/Step3Config'
 import Step4Verify from './steps/Step4Verify'
 import Step5Prompts from './steps/Step5Prompts'
 import Step6Gotchas from './steps/Step6Gotchas'
+import Step7ClaudeConfig from './steps/Step7ClaudeConfig'
 
 const STEPS_CONFIG = [
   {
@@ -50,12 +51,20 @@ const STEPS_CONFIG = [
     subtitle: 'Known issues, already solved',
     renderStep: () => <Step6Gotchas />,
   },
+  {
+    id: 'step-7',
+    num: 7,
+    title: 'Claude.md Configuration',
+    subtitle: 'Standing instructions for every conversation',
+    renderStep: () => <Step7ClaudeConfig />,
+  },
 ]
 
 export default function App() {
   const [dark, setDark] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
   const [orgName, setOrgName] = useState('xavica')
+  const [copiedId, setCopiedId] = useState(null)
   const [doneSteps, setDoneSteps] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('done-steps') || '[]')
@@ -86,6 +95,22 @@ export default function App() {
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    const hash = window.location.hash.slice(1)
+    if (hash) {
+      setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 100)
+    }
+  }, [])
+
+  const copyLink = (id) => {
+    const url = `${window.location.origin}${window.location.pathname}#${id}`
+    window.history.replaceState(null, '', `#${id}`)
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    })
+  }
 
   const toggleDone = (idx) => {
     const next = doneSteps.includes(idx)
@@ -232,7 +257,7 @@ export default function App() {
                   key={step.id}
                   id={step.id}
                   ref={(el) => (stepRefs.current[i] = el)}
-                  className="step-card overflow-hidden"
+                  className="step-card overflow-hidden group/card"
                 >
                   <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-4">
@@ -244,7 +269,20 @@ export default function App() {
                         {isDone ? <CheckCircle2 size={18} strokeWidth={2} /> : step.num}
                       </div>
                       <div>
-                        <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">{step.title}</h2>
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">{step.title}</h2>
+                          <button
+                            onClick={() => copyLink(step.id)}
+                            className="opacity-0 group-hover/card:opacity-100 focus:opacity-100 flex items-center gap-1 px-1.5 py-0.5 rounded text-xs text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                            title="Copy link to this section"
+                          >
+                            {copiedId === step.id ? (
+                              <span className="text-emerald-500 font-medium">Copied!</span>
+                            ) : (
+                              <Link2 size={13} />
+                            )}
+                          </button>
+                        </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{step.subtitle}</p>
                       </div>
                     </div>
